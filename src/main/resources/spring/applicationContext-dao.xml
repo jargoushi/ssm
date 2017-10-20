@@ -9,13 +9,23 @@
 	<!-- 配置数据库相关参数properties的属性:${url} -->
 	<context:property-placeholder location="classpath:resource/jdbc.properties"/>
 	
-	<!-- 数据库连接池 -->
-	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init"
-	destroy-method="close">
-		<property name="username" value="${jdbc.username}"></property>
-		<property name="password" value="${jdbc.password}"></property>
-		<property name="jdbcUrl" value="${jdbc.url}"></property>
-		<property name="driverClass" value="${jdbc.driver}"></property>
+	<!-- 2.数据库连接池 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<!-- 配置连接池属性 -->
+		<property name="driverClass" value="${jdbc.driver}" />
+		<property name="jdbcUrl" value="${jdbc.url}" />
+		<property name="user" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+
+		<!-- c3p0连接池的私有属性 -->
+		<property name="maxPoolSize" value="30" />
+		<property name="minPoolSize" value="10" />
+		<!-- 关闭连接后不自动commit -->
+		<property name="autoCommitOnClose" value="false" />
+		<!-- 获取连接超时时间 -->
+		<property name="checkoutTimeout" value="10000" />
+		<!-- 当获取连接失败重试次数 -->
+		<property name="acquireRetryAttempts" value="2" />
 	</bean>
 	
 	<!-- 配置sqlSessionFactory -->
@@ -33,7 +43,7 @@
 	<!-- 配置dao扫描包,动态实现dao接口，注入到spring容器中 -->
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
 		<!-- 注入sqlSessionFactory -->
-		<property name="sqlSessionFactoryBeanName" ref="sqlSessionFactory"></property>
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
 		<!-- 给出扫描dao接口包 -->
 		<property name="basePackage" value="com.rwb.dao"></property>
 	</bean>
